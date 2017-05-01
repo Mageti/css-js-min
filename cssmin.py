@@ -191,11 +191,19 @@ def remove_url_quotes(css):
     
     return re.sub(r'url\((["\'])([^)]*)\1\)', r'url(\2)', css)
 
+def condense_font_weight(css):
+    """Condense multiple font weights into shorter integer equals."""
+
+    return css.replace(':normal;', ':400;').replace(':bold;', ':700;').replace(':lighter;', '100').replace(':bolder;', '900')
+
+
+
 
 def cssmin(css, wrap=None):
     css = remove_comments(css)
     css = condense_whitespace(css)
     css = remove_url_quotes(css)
+    css = condense_font_weight(css)
     # A pseudo class for the Box Model Hack
     # (see http://tantek.com/CSS/Examples/boxmodelhack.html)
     css = css.replace('"\\"}\\""', "___PSEUDOCLASSBMH___")
