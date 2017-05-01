@@ -185,11 +185,17 @@ def wrap_css_lines(css, line_length):
     if line_start < len(css):
         lines.append(css[line_start:])
     return '\n'.join(lines)
+    
+def remove_url_quotes(css):
+    """url() does not need quotes"""
+    
+    return re.sub(r'url\((["\'])([^)]*)\1\)', r'url(\2)', css)
 
 
 def cssmin(css, wrap=None):
     css = remove_comments(css)
     css = condense_whitespace(css)
+    css = remove_url_quotes(css)
     # A pseudo class for the Box Model Hack
     # (see http://tantek.com/CSS/Examples/boxmodelhack.html)
     css = css.replace('"\\"}\\""', "___PSEUDOCLASSBMH___")
@@ -200,8 +206,7 @@ def cssmin(css, wrap=None):
     css = condense_floating_points(css)
     css = normalize_rgb_colors_to_hex(css)
     css = condense_hex_colors(css)
-    if wrap is not None:
-        css = wrap_css_lines(css, wrap)
+    css = wrap_css_lines(css, wrap) if wrap is not None else css
     css = css.replace("___PSEUDOCLASSBMH___", '"\\"}\\""')
     css = condense_semicolons(css)
     return css.strip()
