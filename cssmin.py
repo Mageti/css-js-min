@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """`cssmin` - A Python CSS compressor."""
@@ -10,7 +10,7 @@ except ImportError:
 import re
 
 
-__version__ = '1.0'
+__version__ = '1.2'
 
 
 def remove_comments(css):
@@ -196,7 +196,12 @@ def condense_font_weight(css):
 
     return css.replace(':normal;', ':400;').replace(':bold;', ':700;').replace(':lighter;', '100').replace(':bolder;', '900')
 
-
+def condense_std_named_colors(css):
+    "Condense multiple named color values to shorter replacement by using HEX "
+    for k, v in iter(list({'aqua': '#0ff', 'black': '#000', 'blue': '#00f',
+        'fuchsia': '#f0f', 'white': '#fff', 'yellow': '#ff0'}.items())):
+        css = css.replace(k, v)
+    return css
 
 
 def cssmin(css, wrap=None):
@@ -204,6 +209,7 @@ def cssmin(css, wrap=None):
     css = condense_whitespace(css)
     css = remove_url_quotes(css)
     css = condense_font_weight(css)
+    css = condense_std_named_colors(css)
     # A pseudo class for the Box Model Hack
     # (see http://tantek.com/CSS/Examples/boxmodelhack.html)
     css = css.replace('"\\"}\\""', "___PSEUDOCLASSBMH___")
